@@ -3,210 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown Timer</title>
+    <title>2025 Countdown Timer</title>
     <style>
-        /* Overall body styling */
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            height: 100vh;
-            background-color: #001f3d; /* Dark Navy */
-            color: #fff;
-            position: relative;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #0a192f, #243b55, #141e30, #2c5364);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            font-family: 'Arial', sans-serif;
+            color: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Full-screen background with animated effects */
-        .particles {
-            position: absolute;
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
             pointer-events: none;
-            z-index: -1;
-            background-color: transparent;
         }
 
-        .particle {
+        .star {
             position: absolute;
-            background-color: white;
+            width: 2px;
+            height: 2px;
+            background: white;
             border-radius: 50%;
-            opacity: 0.7;
-            animation: particle-move 5s linear infinite;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            opacity: var(--initial-opacity);
         }
 
-        @keyframes particle-move {
-            0% {
-                transform: translate(0, 0);
-            }
-            100% {
-                transform: translate(var(--end-x), var(--end-y));
-            }
+        .aurora {
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(93, 193, 185, 0.2) 0%,
+                rgba(145, 111, 186, 0.2) 33%,
+                rgba(228, 115, 151, 0.2) 66%,
+                rgba(255, 177, 108, 0.2) 100%
+            );
+            filter: blur(100px);
+            animation: auroraFlow 20s ease infinite;
+            transform-origin: center center;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        /* Container for countdown and progress bar */
         .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 3rem;
             text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 95%;
+            max-width: 1000px;
+            position: relative;
             z-index: 1;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        #progressBar {
-            width: 100%;
-            height: 30px;
-            background-color: #ddd;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        #progressBar div {
-            height: 100%;
-            background-color: #4caf50;
-            border-radius: 15px;
-            width: 0%; /* Starts empty */
-            transition: width 1s ease-in-out;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            animation: containerFloat 6s ease-in-out infinite;
         }
 
         h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: clamp(1.5rem, 4vw, 3.5rem);
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #64ffda, #88acff, #ff7eb3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite;
+            position: relative;
+            padding: 0 10px;
         }
 
-        #countdown, #hourCountdown {
-            font-size: 1.5rem;
+        h2 {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            margin-bottom: 1rem;
         }
 
-        #percentage {
-            font-size: 1.2rem;
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            perspective: 1000px;
         }
 
-        .time-section {
-            margin: 20px 0;
+        .time-block {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            transform-style: preserve-3d;
+            animation: blockEntrance 0.8s ease-out backwards;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .number {
+            font-size: clamp(1.5rem, 5vw, 3.5rem);
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            animation: numberPulse 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        .label {
+            font-size: clamp(0.8rem, 2vw, 1.4rem);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+            background: linear-gradient(90deg, #64ffda, #88acff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 5px;
+            margin: 2rem 0;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 40px;
+            background: linear-gradient(90deg, #64ffda, #88acff, #ff7eb3);
+            border-radius: 15px;
+            transition: width 0.5s ease-in-out;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            z-index: 2;
+            mix-blend-mode: difference;
+        }
+
+        .total-time-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .total-block {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            animation: totalBlockFloat 6s ease-in-out infinite;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes auroraFlow {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.5); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes numberPulse {
+            0%, 100% { transform: scale(1); filter: brightness(100%); }
+            50% { transform: scale(1.05); filter: brightness(120%); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--initial-opacity); transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(0.5); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                width: 98%;
+            }
+            
+            .countdown {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+
+            .time-block {
+                padding: 1rem;
+            }
+
+            .total-time-container {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-bar {
+                height: 30px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .countdown {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .time-block {
+                padding: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Live Particles Background -->
-    <div class="particles" id="particles"></div>
-
-    <!-- Main Container for Countdown -->
+    <div class="stars"></div>
+    <div class="aurora"></div>
     <div class="container">
-        <h1>Countdown to 31 December 2025</h1>
-        
-        <!-- Main Countdown -->
-        <div id="countdown">Loading...</div>
-        
-        <!-- Hour Countdown -->
-        <div id="hourCountdown" class="time-section">Loading...</div>
-        
-        <!-- Progress Bar -->
-        <div id="progressBar">
-            <div id="progress"></div>
+        <h1>Countdown to End of 2025</h1>
+        <div class="countdown">
+            <div class="time-block" style="animation-delay: 0.1s">
+                <div class="number" id="days">000</div>
+                <div class="label">Days</div>
+            </div>
+            <div class="time-block" style="animation-delay: 0.2s">
+                <div class="number" id="hours">00</div>
+                <div class="label">Hours</div>
+            </div>
+            <div class="time-block" style="animation-delay: 0.3s">
+                <div class="number" id="minutes">00</div>
+                <div class="label">Minutes</div>
+            </div>
+            <div class="time-block" style="animation-delay: 0.4s">
+                <div class="number" id="seconds">00</div>
+                <div class="label">Seconds</div>
+            </div>
         </div>
-
-        <!-- Percentage -->
-        <div id="percentage">0%</div>
+        
+        <div class="progress-container">
+            <div class="progress-text" id="progressText">0%</div>
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="total-time-container">
+            <div class="total-block">
+                <h2>Total Hours Left</h2>
+                <div class="number" id="totalHours">0000</div>
+            </div>
+            <div class="total-block">
+                <h2>Total Time Left</h2>
+                <div class="number" id="totalTime">0000:00:00</div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Particle Effect for Background
-        const particlesContainer = document.getElementById("particles");
-
-        function createParticle() {
-            const particle = document.createElement("div");
-            particle.classList.add("particle");
-            particlesContainer.appendChild(particle);
-
-            const size = Math.random() * 3 + 1;  // Random size of the particle
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.position = "absolute";
-            particle.style.backgroundColor = "white";
-            particle.style.borderRadius = "50%";
-            particle.style.opacity = Math.random();
-            particle.style.animation = "moveParticle 5s linear infinite";
-
-            const startX = Math.random() * window.innerWidth;
-            const startY = Math.random() * window.innerHeight;
-            const endX = Math.random() * window.innerWidth;
-            const endY = Math.random() * window.innerHeight;
-
-            particle.style.left = `${startX}px`;
-            particle.style.top = `${startY}px`;
-
-            particle.style.animationName = "moveParticle";
-            particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
-
-            particle.style.animationTimingFunction = "linear";
-
-            particle.addEventListener("animationend", () => {
-                particle.remove();
-            });
-        }
-
-        setInterval(createParticle, 100); // Create a new particle every 100 ms
-
-        // Keyframes for particle movement
-        const style = document.createElement("style");
-        style.innerHTML = `
-            @keyframes moveParticle {
-                from {
-                    transform: translate(0, 0);
-                }
-                to {
-                    transform: translate(var(--end-x), var(--end-y));
-                }
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            const numStars = 200;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.setProperty('--duration', `${2 + Math.random() * 4}s`);
+                star.style.setProperty('--initial-opacity', `${0.1 + Math.random() * 0.9}`);
+                starsContainer.appendChild(star);
             }
-        `;
-        document.head.appendChild(style);
+        }
 
         function updateCountdown() {
-            const startTime = new Date("January 1, 2025 00:00:00");
-            const endTime = new Date("December 31, 2025 23:59:59");
+            const now = new Date();
+            const endOf2025 = new Date('December 31, 2025 23:59:59');
+            const startOf2025 = new Date('January 1, 2025 00:00:00');
+            const yearDuration = endOf2025 - startOf2025;
+            const timeLeft = endOf2025 - now;
 
-            const currentTime = new Date();
-            const totalDuration = endTime - startTime;
-            const remainingTime = endTime - currentTime;
-            
-            // Calculate the percentage of time passed
-            const timePassed = totalDuration - remainingTime;
-            const percentage = (timePassed / totalDuration) * 100;
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            const totalHours = Math.floor(timeLeft / (1000 * 60 * 60));
 
-            // Format the remaining time (days, hours, minutes, seconds)
-            const remainingDays = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-            const remainingHours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const remainingMinutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-            const remainingSeconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+            const totalTimeHours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const totalTimeMinutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const totalTimeSeconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-            const remainingHoursOnly = remainingDays * 24 + remainingHours; // Total remaining hours
+            document.getElementById('days').textContent = String(days).padStart(3, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            document.getElementById('totalHours').textContent = String(totalHours).padStart(4, '0');
+            document.getElementById('totalTime').textContent = 
+                `${String(totalTimeHours).padStart(4, '0')}:${String(totalTimeMinutes).padStart(2, '0')}:${String(totalTimeSeconds).padStart(2, '0')}`;
 
-            // Display countdown and percentage
-            document.getElementById("countdown").innerHTML = 
-                `${remainingDays}d ${remainingHours}h ${remainingMinutes}m ${remainingSeconds}s`;
-            document.getElementById("hourCountdown").innerHTML = 
-                `${remainingHoursOnly} hours left`;
+            let progress = 0;
+            if (now >= startOf2025 && now <= endOf2025) {
+                progress = ((now - startOf2025) / yearDuration) * 100;
+            } else if (now > endOf2025) {
+                progress = 100;
+            }
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${Math.round(progress)}%`;
 
-            // Update progress bar and percentage
-            document.getElementById("progress").style.width = `${percentage}%`;
-            document.getElementById("percentage").innerHTML = `${Math.round(percentage)}%`;
-
-            // Call the function every second
-            setTimeout(updateCountdown, 1000);
+            if (timeLeft < 0) {
+                clearInterval(countdownInterval);
+                document.querySelector('.container').innerHTML = '<h1>End of 2025!</h1>';
+            }
         }
 
-        // Start the countdown
+        createStars();
         updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>
